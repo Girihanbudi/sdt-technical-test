@@ -1,0 +1,17 @@
+version: "3.7"
+
+# create local service environment
+services:
+  # local database with postgres
+  sdt-postgres:
+    image: postgres:14.1-alpine3.15
+    container_name: sdt-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
