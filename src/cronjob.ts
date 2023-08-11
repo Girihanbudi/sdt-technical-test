@@ -7,7 +7,7 @@ export interface CronValue {
 
 export const HappyBirthDayEventCron = (): CronValue => {
   return {
-    format: "*/15 * * * * *", // run every 15 minutes
+    format: "0 */15 * * * *", // run every 15 minutes
     task: () => HappyBirthdayMailEvent({ hour: 9 }),
   };
 };
