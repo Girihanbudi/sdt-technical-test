@@ -21,6 +21,7 @@ export enum MailStatus {
 export const MailStatuses = Object.values(MailStatus);
 
 export interface EventLogData {
+  ref: string;
   time: Date;
   msg?: string;
 }
