@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "EventLog" ALTER COLUMN "EndedAt" DROP NOT NULL;
