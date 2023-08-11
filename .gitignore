@@ -140,5 +140,5 @@ dist
 
 # End of https://www.toptal.com/developers/gitignore/api/node
 
-# Ignore dev folder
-dev
+# Ignore dev data
+dev/data
