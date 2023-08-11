@@ -74,38 +74,34 @@ export const HappyBirthdayMailEvent = async (
     console.log("[HappyBirthdayMailEvent] failed to get users:", e);
   }
 
-  console.log("user data ===", users);
+  if (users.length == 0) {
+    console.log("[HappyBirthdayMailEvent] no user found");
+    return;
+  }
 
-  return;
+  let log: EventLog = { ...defaultEventLog };
+  const { result, err } = await initEventLog(
+    EventObjective.Birthday,
+    users.map((user) => user.id)
+  );
+  if (err) {
+    console.log("[HappyBirthdayMailEvent] unable to init log:", err.title);
+    return;
+  } else if (result) {
+    log = result;
+  }
 
-  // if (users.length == 0) {
-  //   console.log("[HappyBirthdayMailEvent] no user found");
-  //   return;
-  // }
+  users.forEach(async (user) => {
+    const { result, err } = await SendMail({
+      topic: EventObjective.Birthday,
+      email: user.email,
+      message: `Hey, ${user.fullName} it’s your birthday`,
+    });
+    const message = err ? err.title : result ? result.status : undefined;
+    updateEventLog(log, { ref: user.id, time: new Date(), msg: message });
+  });
 
-  // let log: EventLog = { ...defaultEventLog };
-  // const { result, err } = await initEventLog(
-  //   EventObjective.Birthday,
-  //   users.map((user) => user.id)
-  // );
-  // if (err) {
-  //   console.log("[HappyBirthdayMailEvent] unable to init log:", err.title);
-  //   return;
-  // } else if (result) {
-  //   log = result;
-  // }
+  finishEventLog(log);
 
-  // users.forEach(async (user) => {
-  //   const { result, err } = await SendMail({
-  //     topic: EventObjective.Birthday,
-  //     email: user.email,
-  //     message: `Hey, ${user.fullName} it’s your birthday`,
-  //   });
-  //   const message = err ? err.title : result ? result.status : undefined;
-  //   updateEventLog(log, { time: new Date(), msg: message });
-  // });
-
-  // finishEventLog(log);
-
-  // console.log("[HappyBirthdayMailEvent] finish sending happy birthday event");
+  console.log("[HappyBirthdayMailEvent] finish sending happy birthday event");
 };
