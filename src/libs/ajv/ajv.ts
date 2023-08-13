@@ -2,10 +2,18 @@ import Ajv, { ValidateFunction } from "ajv";
 import addFormats from "ajv-formats";
 import { StdError, ErrBadRequest } from "../../pkg/stderror";
 import { StdInvalidParam } from "../../pkg/stderror/stderror";
-import { DataValidateFunction } from "ajv/dist/types";
+import { customValidations } from "./custom-validation";
 
 export let ajv = new Ajv({ allErrors: true }); // options can be passed, e.g. {allErrors: true}
 ajv = addFormats(ajv);
+
+// Install custom validation
+customValidations.forEach((validation) =>
+  ajv.addKeyword({
+    keyword: validation.keyword,
+    compile: validation.function,
+  })
+);
 
 export const convertToStdErr = (
   validate: ValidateFunction
