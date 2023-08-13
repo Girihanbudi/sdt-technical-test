@@ -4,7 +4,6 @@ import { ErrInternalServerError, ErrNotFound } from "../../pkg/stderror";
 import { StdResponse } from "../../pkg/stdresponse";
 import ajv, { convertToStdErr } from "../../libs/ajv";
 import { updateUserScheme, IUpdateUserRequest } from "../preset";
-import { trim } from "../../utils/strings";
 
 export const updateUser = async (
   payload: IUpdateUserRequest
@@ -41,7 +40,7 @@ export const updateUser = async (
 
   // Update user data
   if (user) {
-    let fullName = trim(payload.fullName);
+    let fullName = payload.fullName.trim();
     let firstName = fullName.split(" ", 1)[0];
     let lastName =
       fullName.length <= firstName.length + 1

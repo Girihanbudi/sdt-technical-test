@@ -13,7 +13,6 @@ import {
   ICreateUserRequest,
   ICreateUserResponse,
 } from "../preset";
-import { trim } from "../../utils/strings";
 
 export const createUser = async (
   payload: ICreateUserRequest
@@ -29,7 +28,7 @@ export const createUser = async (
     return result;
   }
 
-  // Check if user already exist
+  // Check if email already used
   const userExist = !!(await prisma.user.findFirst({
     where: {
       email: {
@@ -38,12 +37,12 @@ export const createUser = async (
     },
   }));
   if (userExist) {
-    result.err = ErrDuplicateRecord();
+    result.err = ErrDuplicateRecord().setErrorFromString("Email already used!");
     return result;
   }
 
   // Create a new user
-  let fullName = trim(payload.fullName);
+  let fullName = payload.fullName.trim();
   let firstName = fullName.split(" ", 1)[0];
   let lastName =
     fullName.length <= firstName.length + 1
