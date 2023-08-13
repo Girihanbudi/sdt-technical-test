@@ -12,7 +12,7 @@ export const createUserScheme: JSONSchemaType<ICreateUserRequest> = {
   type: "object",
   properties: {
     email: { type: "string", format: "email" },
-    fullName: { type: "string" },
+    fullName: { type: "string", notEmptyString: true },
     dob: { type: "string", format: "date" },
     timezone: { type: "string", enum: [...tzIdentifiers] },
   },
