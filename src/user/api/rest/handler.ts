@@ -1,11 +1,21 @@
 import { Request, Response } from "express";
 import {
+  IGetUserRequest,
   ICreateUserRequest,
   IUpdateUserRequest,
   IDeleteUserRequest,
 } from "../../preset";
 import { ExpressRes, ExpressResErr } from "../../../pkg/stdresponse";
-import { createUser, updateUser, deleteUser } from "../../usecase";
+import { getUser, createUser, updateUser, deleteUser } from "../../usecase";
+
+export const getUserApi = async (
+  req: Request<IGetUserRequest>,
+  res: Response
+) => {
+  const { result, err } = await getUser({ id: req.params.id });
+  if (err) ExpressResErr(res, err);
+  else ExpressRes(res, 200, result);
+};
 
 export const createUserApi = async (
   req: Request<ICreateUserRequest>,

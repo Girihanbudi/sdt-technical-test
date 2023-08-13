@@ -1,8 +1,16 @@
 import { Router } from "express";
-import { createUserApi, updateUserApi, deleteUserApi } from "./handler";
+import {
+  getUserApi,
+  createUserApi,
+  updateUserApi,
+  deleteUserApi,
+} from "./handler";
 import { jsonParser } from "../../../libs/parser";
 
 export const router = Router();
+
+/* GET programming language */
+router.get("/:id", jsonParser, getUserApi);
 
 /* POST programming language */
 router.post("/", jsonParser, createUserApi);

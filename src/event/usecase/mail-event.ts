@@ -10,9 +10,12 @@ import {
   MailStatus,
   happyBirthdayEventScheme,
 } from "../preset";
-import { tzIdentifiersByOffset } from "../../utils/timezone/timezones";
+import {
+  getTimezoneOffset,
+  tzIdentifiersByOffsetRanges,
+  getOffsetRanges,
+} from "../../utils/timezone/timezones";
 import { initEventLog, updateEventLog, finishEventLog } from "./event";
-import { getTimezoneOffset } from "../../utils/datetime";
 
 export const HappyBirthdayMailEvent = async (
   payload: IHappyBirthdayEvent,
@@ -34,11 +37,13 @@ export const HappyBirthdayMailEvent = async (
     }
   }
 
-  const offset = getTimezoneOffset(current, payload.hour);
-  const zones = tzIdentifiersByOffset(offset);
+  const currentOffset = getTimezoneOffset(current, payload.hour);
+  const offsetRanges = getOffsetRanges(currentOffset, 12); // 12 hours back tollerance
+  const zones = tzIdentifiersByOffsetRanges(offsetRanges);
 
   let users: User[] = [];
 
+  // Query all user from current time to 12 hours back that not processed yet
   const firstAttemptQuery = `SELECT u.* FROM users u
   LEFT OUTER JOIN mail_logs l ON u.email = l.email
   AND l."createdAt" = CURRENT_DATE
@@ -48,6 +53,7 @@ export const HappyBirthdayMailEvent = async (
     AND date_part('month', dob) = ${current.getUTCMonth() + 1}
     AND timezone in (${zones.map((zone) => `'${zone}'`).join(",")});`;
 
+  // Query all user that has been processed but failed with max attempt limit
   const reAttemptQuery = `SELECT u.* FROM users u
   INNER JOIN (SELECT
     email,
